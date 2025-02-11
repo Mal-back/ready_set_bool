@@ -1,4 +1,4 @@
-pub fn gray_code(n: u32) ->  u32 {
+pub fn gray_code(n: u32) -> u32 {
     n ^ (n >> 1)
 }
 
@@ -6,7 +6,7 @@ pub fn gray_code(n: u32) ->  u32 {
 mod tests {
     use super::*;
     #[test]
-    fn adder_test_ok() {
+    fn gray_code_test_ok() {
         assert_eq!(gray_code(0), 0);
         assert_eq!(gray_code(1), 1);
         assert_eq!(gray_code(2), 3);

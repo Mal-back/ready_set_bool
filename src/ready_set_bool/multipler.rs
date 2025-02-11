@@ -5,9 +5,9 @@ pub fn multiplier(a: u32, b: u32) -> u32 {
     if b == 0 {
         return 0;
     }
-        if b & 1 == 1 {
-            res = adder(res, a);
-        }
+    if b & 1 == 1 {
+        res = adder(res, a);
+    }
     return res + multiplier(a << 1, b >> 1);
 }
 
@@ -15,7 +15,7 @@ pub fn multiplier(a: u32, b: u32) -> u32 {
 mod tests {
     use super::*;
     #[test]
-    fn adder_test_ok() {
+    fn multiplier_test_ok() {
         assert_eq!(multiplier(10, 5), 50);
         assert_eq!(multiplier(0, 15), 0);
         assert_eq!(multiplier(3, 48), 144);

@@ -60,11 +60,11 @@ impl<'a> Formula<'a> {
         if self.stack.len() < 2 {
             return Err(Error::InvalidFormulaGrammar);
         }
-        let first = self
+        let second = self
             .stack
             .pop()
             .expect("Stack len should be at least two at this point");
-        let second = self
+        let first = self
             .stack
             .pop()
             .expect("Stack len should be at least two at this point");
