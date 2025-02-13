@@ -1,21 +1,14 @@
-use super::formula::Formula;
+use super::{formula::Formula, tree_formula::FormulaTree};
 
 pub fn eval_formula(input: &str) -> bool {
-    let res;
-    match Formula::new(input) {
-        Ok(mut formula) => res = formula.evaluate(),
+    let formula = match FormulaTree::build(input) {
+        Ok(formula) => formula,
         Err(e) => {
             println!("{e}");
             return false;
         }
-    }
-    match res {
-        Ok(r) => return r,
-        Err(e) => {
-            println!("{e}");
-            return false;
-        }
-    }
+    };
+    formula.resolve_tree()
 }
 
 #[cfg(test)]

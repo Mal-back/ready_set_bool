@@ -4,5 +4,6 @@ mod eval_formula;
 mod formula;
 mod gray_code;
 mod multipler;
+mod tree_formula;
 
 pub use error::{Error, Result};
