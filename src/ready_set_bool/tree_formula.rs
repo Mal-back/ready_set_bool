@@ -30,7 +30,6 @@ pub struct FormulaTree {
 
 impl FormulaTree {
     pub fn build(formula: &str) -> Result<Self> {
-        FormulaTree::check_syntax(formula)?;
         let mut stack = vec![];
         for characters in formula.chars() {
             match characters {
@@ -50,7 +49,7 @@ impl FormulaTree {
                 '^' => FormulaTree::build_operation_node(Operation::Xor, &mut stack)?,
                 '>' => FormulaTree::build_operation_node(Operation::IfThen, &mut stack)?,
                 '=' => FormulaTree::build_operation_node(Operation::Equality, &mut stack)?,
-                _ => panic!("Invalid character should have been seen at Formula initialisation"),
+                _ => return Err(Error::InvalidFormulaSyntax),
             }
         }
         if stack.len() != 1 {
@@ -95,24 +94,6 @@ impl FormulaTree {
         Ok(())
     }
 
-    fn check_syntax(formula: &str) -> Result<()> {
-        let sanity_closure = |c| {
-            c != '0'
-                && c != '1'
-                && c != '!'
-                && c != '&'
-                && c != '|'
-                && c != '^'
-                && c != '>'
-                && c != '='
-        };
-        if formula.chars().any(sanity_closure) {
-            Err(Error::InvalidFormulaSyntax)
-        } else {
-            println!("Ok in syntax");
-            Ok(())
-        }
-    }
     pub fn resolve_tree(self) -> bool {
         FormulaTree::resolve_node(&self.root)
     }

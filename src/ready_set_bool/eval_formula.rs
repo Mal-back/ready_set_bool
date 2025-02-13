@@ -1,4 +1,4 @@
-use super::{formula::Formula, tree_formula::FormulaTree};
+use super::tree_formula::FormulaTree;
 
 pub fn eval_formula(input: &str) -> bool {
     let formula = match FormulaTree::build(input) {
