@@ -31,8 +31,8 @@ pub struct FormulaTree {
 impl FormulaTree {
     pub fn build(formula: &str) -> Result<Self> {
         let mut stack = vec![];
-        for characters in formula.chars() {
-            match characters {
+        for character in formula.chars() {
+            match character {
                 '0' => stack.push(FormulaNode {
                     node_type: NodeType::Leaf(false),
                     left_child: None,
@@ -132,7 +132,7 @@ impl Operation {
     fn get_operation_closure(&self) -> impl FnOnce(bool, bool) -> bool {
         match self {
             Operation::Equality => |first, second| first == second,
-            Operation::Not => |first: bool, _second| !first,
+            Operation::Not => |first: bool, _| !first,
             Operation::And => |first, second| first & second,
             Operation::Or => |first, second| first | second,
             Operation::Xor => |first, second| first ^ second,
