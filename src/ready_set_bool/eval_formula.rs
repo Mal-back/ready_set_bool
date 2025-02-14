@@ -1,7 +1,7 @@
-use super::tree_formula::FormulaTree;
+use super::tree_formula::ConcreteFormulaTree;
 
 pub fn eval_formula(input: &str) -> bool {
-    let formula = match FormulaTree::build(input) {
+    let formula = match ConcreteFormulaTree::build(input) {
         Ok(formula) => formula,
         Err(e) => {
             println!("{e}");

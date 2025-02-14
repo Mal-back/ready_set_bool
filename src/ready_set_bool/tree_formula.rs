@@ -1,34 +1,23 @@
 use crate::ready_set_bool::Error;
 
-use super::Result;
+use super::{operation::Operation, Result};
 
-#[derive(PartialEq)]
-pub enum Operation {
-    And,
-    Or,
-    Xor,
-    Not,
-    IfThen,
-    Equality,
-}
-
-#[derive(PartialEq)]
-pub enum NodeType {
+enum NodeType {
     Leaf(bool),
     Node(Operation),
 }
 
-pub struct FormulaNode {
+struct FormulaNode {
     node_type: NodeType,
     left_child: Option<Box<FormulaNode>>,
     right_child: Option<Box<FormulaNode>>,
 }
 
-pub struct FormulaTree {
+pub struct ConcreteFormulaTree {
     root: FormulaNode,
 }
 
-impl FormulaTree {
+impl ConcreteFormulaTree {
     pub fn build(formula: &str) -> Result<Self> {
         let mut stack = vec![];
         for character in formula.chars() {
@@ -43,12 +32,12 @@ impl FormulaTree {
                     left_child: None,
                     right_child: None,
                 }),
-                '!' => FormulaTree::build_negation_node(&mut stack)?,
-                '&' => FormulaTree::build_operation_node(Operation::And, &mut stack)?,
-                '|' => FormulaTree::build_operation_node(Operation::Or, &mut stack)?,
-                '^' => FormulaTree::build_operation_node(Operation::Xor, &mut stack)?,
-                '>' => FormulaTree::build_operation_node(Operation::IfThen, &mut stack)?,
-                '=' => FormulaTree::build_operation_node(Operation::Equality, &mut stack)?,
+                '!' => Self::build_negation_node(&mut stack)?,
+                '&' => Self::build_operation_node(Operation::And, &mut stack)?,
+                '|' => Self::build_operation_node(Operation::Or, &mut stack)?,
+                '^' => Self::build_operation_node(Operation::Xor, &mut stack)?,
+                '>' => Self::build_operation_node(Operation::IfThen, &mut stack)?,
+                '=' => Self::build_operation_node(Operation::Equality, &mut stack)?,
                 _ => return Err(Error::InvalidFormulaSyntax),
             }
         }
@@ -95,7 +84,7 @@ impl FormulaTree {
     }
 
     pub fn resolve_tree(self) -> bool {
-        FormulaTree::resolve_node(&self.root)
+        Self::resolve_node(&self.root)
     }
 
     fn resolve_node(node: &FormulaNode) -> bool {
@@ -103,47 +92,27 @@ impl FormulaTree {
         let left_child_value;
         if let Some(right_child) = &node.right_child {
             right_child_value = match right_child.node_type {
-                NodeType::Node(_) => FormulaTree::resolve_node(&right_child),
-                NodeType::Leaf(value) => value
+                NodeType::Node(_) => Self::resolve_node(&right_child),
+                NodeType::Leaf(value) => value,
             }
         } else {
             right_child_value = true;
         }
         if let Some(left_child) = &node.left_child {
             left_child_value = match left_child.node_type {
-                NodeType::Node(_) => FormulaTree::resolve_node(&left_child),
-                NodeType::Leaf(value) => value
+                NodeType::Node(_) => Self::resolve_node(&left_child),
+                NodeType::Leaf(value) => value,
             }
-        }
-        else {
+        } else {
             panic!("This node should never be None");
-        } 
+        }
 
         let operation_closure = match &node.node_type {
             NodeType::Node(operation) => operation.get_operation_closure(),
             _ => panic!("resolve_node should never be called on a leaf node"),
         };
 
-        operation_closure(left_child_value, right_child_value)    
-    }
-}
-
-impl Operation {
-    fn get_operation_closure(&self) -> impl FnOnce(bool, bool) -> bool {
-        match self {
-            Operation::Equality => |first, second| first == second,
-            Operation::Not => |first: bool, _| !first,
-            Operation::And => |first, second| first & second,
-            Operation::Or => |first, second| first | second,
-            Operation::Xor => |first, second| first ^ second,
-            Operation::IfThen => |first: bool, second| {
-                if !first || (first && second) {
-                    true
-                } else {
-                    false
-                }
-            }
-        }
+        operation_closure(left_child_value, right_child_value)
     }
 }
 
@@ -152,23 +121,23 @@ mod tests {
     use super::*;
     #[test]
     fn build_tree_ok() {
-        let tree = FormulaTree::build("00&");
+        let tree = ConcreteFormulaTree::build("00&");
         assert!(tree.is_ok());
-        let tree = FormulaTree::build("1011||=");
+        let tree = ConcreteFormulaTree::build("1011||=");
         assert!(tree.is_ok());
     }
 
     #[test]
     fn eval_formula_err_invalid_characters() {
-        let tree = FormulaTree::build("00u&");
+        let tree = ConcreteFormulaTree::build("00u&");
         assert!(matches!(tree, Err(Error::InvalidFormulaSyntax)));
     }
 
     #[test]
     fn eval_formula_err_invalid_grammar() {
-        let tree = FormulaTree::build("000&");
+        let tree = ConcreteFormulaTree::build("000&");
         assert!(matches!(tree, Err(Error::InvalidFormulaGrammar)));
-        let tree = FormulaTree::build("00&11&");
+        let tree = ConcreteFormulaTree::build("00&11&");
         assert!(matches!(tree, Err(Error::InvalidFormulaGrammar)));
     }
 }
