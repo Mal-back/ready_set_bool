@@ -100,7 +100,16 @@ impl TreeNode {
         })
     }
 
-    pub fn get_leaf_value(&self, variables_values: u32, expression_variables: Vec<char>) -> bool {
+    pub fn resolve_node(&self, variables_values: u32, expression_variables: Vec<char>) -> bool {
+        match self.node_type {
+            NodeType::Leaf(_) => panic!("resolve node should never be call on a leaf"),
+            NodeType::Node(_) => {}
+        }
+        match self.left_child
+        todo!()
+    }
+
+    fn get_leaf_value(&self, variables_values: u32, expression_variables: Vec<char>) -> bool {
         match self.node_type {
             NodeType::Node(_) => panic!("This should only be called on a leaf"),
             NodeType::Leaf(variable) => {
