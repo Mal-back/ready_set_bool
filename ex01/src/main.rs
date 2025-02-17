@@ -1,6 +1,11 @@
-use super::adder::adder;
+fn main() {
+    println!("10 * 5 : {}", multiplier(10, 5));
+    println!("0 * 15 : {}", multiplier(0, 15));
+    println!("3 * 48 : {}", multiplier(3, 48));
+    println!("13 * 0 : {}", multiplier(13, 0));
+}
 
-pub fn multiplier(a: u32, b: u32) -> u32 {
+fn multiplier(a: u32, b: u32) -> u32 {
     let mut res = 0;
     if b == 0 {
         return 0;
@@ -9,6 +14,15 @@ pub fn multiplier(a: u32, b: u32) -> u32 {
         res = adder(res, a);
     }
     return res + multiplier(a << 1, b >> 1);
+}
+
+fn adder(a: u32, b: u32) -> u32 {
+    if b == 0 {
+        return a;
+    }
+    let carry = (a & b) << 1;
+
+    adder(a ^ b, carry)
 }
 
 #[cfg(test)]

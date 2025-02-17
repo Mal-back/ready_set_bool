@@ -1,5 +1,5 @@
 [package]
-name = "ready_set_bool"
+name = "ex03"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,4 +1,18 @@
-use super::tree_formula::ConcreteFormulaTree;
+use concrete_tree::ConcreteFormulaTree;
+
+mod concrete_tree;
+mod error;
+mod operation;
+
+fn main() {
+    println!("Resolving 10& : {}", eval_formula("10&"));
+    println!("Resolving 10| : {}", eval_formula("10|"));
+    println!("Resolving 11> : {}", eval_formula("11>"));
+    println!("Resolving 10= : {}", eval_formula("10="));
+    println!("Resolving 1011||= : {}", eval_formula("1011||="));
+    println!("Resolving 1! : {}", eval_formula("1!"));
+    println!("Resolving 01> : {}", eval_formula("01>"));
+}
 
 pub fn eval_formula(input: &str) -> bool {
     let formula = match ConcreteFormulaTree::build(input) {

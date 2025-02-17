@@ -1,6 +1,7 @@
-use crate::ready_set_bool::Error;
-
-use super::{operation::Operation, Result};
+use crate::{
+    error::{Error, Result},
+    operation::Operation,
+};
 
 enum NodeType {
     Leaf(bool),

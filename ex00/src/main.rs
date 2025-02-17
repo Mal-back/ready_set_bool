@@ -1,4 +1,11 @@
-pub fn adder(a: u32, b: u32) -> u32 {
+fn main() {
+    println!("10 + 5 : {}", adder(10, 5));
+    println!("0 + 15 : {}", adder(0, 15));
+    println!("3 + 48 : {}", adder(3, 48));
+    println!("13 + 0 : {}", adder(13, 0));
+}
+
+fn adder(a: u32, b: u32) -> u32 {
     if b == 0 {
         return a;
     }
