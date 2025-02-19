@@ -6,6 +6,7 @@ mod tree_node;
 mod truth_table;
 
 fn main() {
-    println!("Hello, world!");
-    let tree = TruthTable::build_from_str("AA&");
+    let mut tree = TruthTable::build_from_str("AB=C^").unwrap();
+    tree.turn_into_negation_normal_form();
+    tree.print_rpn_from_tree();
 }

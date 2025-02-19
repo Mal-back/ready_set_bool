@@ -1,3 +1,5 @@
+use std::fmt::{write, Display};
+
 #[derive(Debug, Clone)]
 pub enum Operation {
     And,
@@ -35,5 +37,19 @@ impl Operation {
                 }
             },
         }
+    }
+}
+
+impl Display for Operation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let operation_character = match self {
+            Operation::Equality => '=',
+            Operation::Not => '!',
+            Operation::And => '&',
+            Operation::Or => '|',
+            Operation::Xor => '^',
+            Operation::IfThen => '>',
+        };
+        write!(f, "{operation_character}")
     }
 }

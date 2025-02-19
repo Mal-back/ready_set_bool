@@ -34,6 +34,11 @@ impl TruthTable {
         }
     }
 
+    pub fn print_rpn_from_tree(&self) {
+        self.root.print_rpn_op_from_tree();
+        println!("");
+    }
+
     fn build_new_node(stack: &mut Vec<TreeNode>, symbol: char) -> Result<TreeNode> {
         let (operation, number_of_childs) = Operation::new(symbol);
         let right_child = if number_of_childs == 2 {

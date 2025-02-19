@@ -59,7 +59,20 @@ impl TreeNode {
             | NodeType::Node(Operation::Not) => {}
             NodeType::Node(Operation::Xor) => self.simplify_xor(),
             NodeType::Node(Operation::IfThen) => self.simplify_if_then(),
-            NodeType::Node(Operation::Equality) => todo!(),
+            NodeType::Node(Operation::Equality) => self.simplify_equality(),
+        }
+    }
+
+    pub fn print_rpn_op_from_tree(&self) {
+        if let Some(left_child) = &self.left_child {
+            left_child.print_rpn_op_from_tree();
+        }
+        if let Some(right_child) = &self.right_child {
+            right_child.print_rpn_op_from_tree();
+        }
+        match &self.node_type {
+            NodeType::Node(op) => print!("{op}"),
+            NodeType::Leaf(var) => print!("{var}"),
         }
     }
 
@@ -114,5 +127,29 @@ impl TreeNode {
         self.node_type = NodeType::Node(Operation::Or);
     }
 
-    fn simplify_equality(&mut self) {}
+    fn simplify_equality(&mut self) {
+        let origin_left_child = self.left_child.take();
+        let origin_right_child = self.right_child.take();
+
+        let mut new_left_child = TreeNode::build(
+            NodeType::Node(Operation::IfThen),
+            origin_left_child.clone(),
+            origin_right_child.clone(),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        let mut new_right_child = TreeNode::build(
+            NodeType::Node(Operation::IfThen),
+            origin_right_child.clone(),
+            origin_left_child.clone(),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        new_left_child.simplify_if_then();
+        new_right_child.simplify_if_then();
+
+        self.left_child = Some(new_left_child).map(Box::new);
+        self.right_child = Some(new_right_child).map(Box::new);
+        self.node_type = NodeType::Node(Operation::And);
+    }
 }
