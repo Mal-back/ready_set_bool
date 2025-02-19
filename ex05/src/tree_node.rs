@@ -5,13 +5,13 @@ use crate::{
     operation::Operation,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum NodeType {
     Leaf(char),
     Node(Operation),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TreeNode {
     pub node_type: NodeType,
     left_child: Option<Box<TreeNode>>,
@@ -21,8 +21,8 @@ pub struct TreeNode {
 impl TreeNode {
     pub fn build(
         node_type: NodeType,
-        right_child: Option<TreeNode>,
-        left_child: Option<TreeNode>,
+        right_child: Option<Box<TreeNode>>,
+        left_child: Option<Box<TreeNode>>,
     ) -> Result<Self> {
         match node_type {
             NodeType::Leaf(_) => {}
@@ -37,8 +37,6 @@ impl TreeNode {
                 }
             }
         }
-        let left_child = left_child.map(Box::new);
-        let right_child = right_child.map(Box::new);
         Ok(Self {
             node_type,
             left_child,
@@ -59,14 +57,62 @@ impl TreeNode {
             NodeType::Node(Operation::And)
             | NodeType::Node(Operation::Or)
             | NodeType::Node(Operation::Not) => {}
-            NodeType::Node(Operation::Xor) => todo!(),
-            NodeType::Node(Operation::IfThen) => todo!(),
+            NodeType::Node(Operation::Xor) => self.simplify_xor(),
+            NodeType::Node(Operation::IfThen) => self.simplify_if_then(),
             NodeType::Node(Operation::Equality) => todo!(),
         }
     }
 
-    pub fn simplify_xor(&mut self) {
+    fn simplify_xor(&mut self) {
         let origin_left_child = self.left_child.take();
         let origin_right_child = self.right_child.take();
+
+        let negate_left_child = TreeNode::build(
+            NodeType::Node(Operation::Not),
+            None,
+            origin_left_child.clone(),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        let negate_right_child = TreeNode::build(
+            NodeType::Node(Operation::Not),
+            None,
+            origin_right_child.clone(),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        let new_left_child = TreeNode::build(
+            NodeType::Node(Operation::And),
+            origin_left_child,
+            Some(negate_right_child).map(Box::new),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        let new_right_child = TreeNode::build(
+            NodeType::Node(Operation::And),
+            origin_right_child,
+            Some(negate_left_child).map(Box::new),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        self.left_child = Some(new_left_child).map(Box::new);
+        self.right_child = Some(new_right_child).map(Box::new);
+        self.node_type = NodeType::Node(Operation::Or);
     }
+
+    fn simplify_if_then(&mut self) {
+        let origin_left_child = self.left_child.take();
+
+        let negate_left_child = TreeNode::build(
+            NodeType::Node(Operation::Not),
+            None,
+            origin_left_child.clone(),
+        )
+        .expect("Nothing should fail at this point, we know the node will be valid");
+
+        self.left_child = Some(negate_left_child).map(Box::new);
+        self.node_type = NodeType::Node(Operation::Or);
+    }
+
+    fn simplify_equality(&mut self) {}
 }

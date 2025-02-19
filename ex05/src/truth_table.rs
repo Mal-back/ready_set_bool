@@ -42,7 +42,11 @@ impl TruthTable {
             None
         };
         let left_child = stack.pop();
-        TreeNode::build(NodeType::Node(operation), right_child, left_child)
+        TreeNode::build(
+            NodeType::Node(operation),
+            right_child.map(Box::new),
+            left_child.map(Box::new),
+        )
     }
 
     pub fn turn_into_negation_normal_form(&mut self) {
