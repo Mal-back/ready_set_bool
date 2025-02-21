@@ -56,6 +56,8 @@ impl TruthTable {
 
     pub fn turn_into_negation_normal_form(&mut self) {
         self.root.simplify_node();
+        self.print_rpn_from_tree();
+        self.root.push_negation();
     }
 }
 

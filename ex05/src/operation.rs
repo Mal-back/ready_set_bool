@@ -1,6 +1,6 @@
 use std::fmt::{write, Display};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Operation {
     And,
     Or,
